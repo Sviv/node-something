@@ -15,6 +15,10 @@ router.get('/get-all-mock', function(req, res) {
   console.log('get-all', planList);
   res.json(planList);
 });
+router.get('/my-mock', function(req, res) {
+	//res.json(planList);
+  res.send('Hellou woorld');
+});
 
 
 module.exports = router;

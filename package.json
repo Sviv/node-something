@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "stop": "node server.stop.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +16,6 @@
     "debug": "^2.6.8",
     "express": "^4.15.3",
     "mongojs": "^2.4.0",
-    "winston": "^2.3.1"
+    "log4js": "^2.5.3"
   }
 }

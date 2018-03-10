@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: divided-words.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: divided-words.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var express = require('express');
+var router = express.Router();
+var mongo = require('mongodb').MongoClient;
+var assert = require('assert');
+var dbConfig = require('../config');
+var url = dbConfig.database;
+
+var ObjectId = require('mongodb').ObjectId;
+
+
+/**
+ * Метод получения полного списка слов
+ * @example
+ * // returns 2
+ * router.get(5, 10);
+ * @example
+ * // returns 3
+ * router.get(5, 15);
+ * @returns {Number} Returns the result
+ */
+function getAllWords(req, res) {
+	/**Метод получения полного списка слов
+	* тут что-то
+	*/
+	var part = 'ко';
+	var rows = 2;
+	var page = 1;
+	var id = req.query.id;
+	console.log('req.query.id: ' + req.query.id);
+	var searchParams = {'_id' : ObjectId("5a645e482858fc0e68606f18"), 'wholeWord' : 'корова', 'dividedWord' : {'$regex': part}};
+	var searchParamsId = {'_id' : ObjectId(id)};
+	var searchParamsWord = {'wholeWord' : 'корова'};
+	var searchParamsPart = {'dividedWord' : {'$regex': part}};
+	
+	mongo.connect(url, function(err, db) {
+		if (err) {
+			throw err;
+		} else {
+			console.log('Connection success');
+		}
+		db.collection('DividedWords').find(searchParamsId).limit(rows).sort({wholeWord : 1}).toArray(function(err, result) {
+			if (err) {
+				throw err;
+			} else {
+				res.send(result);
+				console.log(result);
+			}
+		 });
+		db.close();
+	});
+}
+router.get('/get-all-words', getAllWords(req, res));
+router.get('/get-card-list', function(req, res) {
+	//метод получения списка карточек
+	//Параметры поиска:
+	//Количество страниц
+	
+});
+router.post('/insert-word', function(req, res) {
+	//Метод добавления одного слова в базу
+	//var word = {'wholeWord' : 'корова', 'dividedWord' : 'ко-ро-ва', 'img' : 'https://kartinki.detki.today/wp-content/uploads/2017/07/chernaya-korova.png'};
+	//var word = {'wholeWord' : 'собака', 'dividedWord' : 'со-ба-ка', 'img' : 'http://cliparthouse.ru/wp-content/uploads/animals/81-animals-dog-14.jpg'};
+	//var word = {'wholeWord' : 'кошка', 'dividedWord' : 'ко-шка', 'img' : 'https://thumbs.dreamstime.com/b/red-mixed-breed-cat-isolated-white-15456414.jpg'};
+	//var word = {'wholeWord' : 'крокодил', 'dividedWord' : 'кро-ко-дил', 'img' : 'http://pngimg.com/uploads/crocodile/crocodile_PNG13165.png'};
+	var word = {
+		'wholeWord' : 'лиса',
+		'dividedWord' : 'ли-са',
+		'img' : 'http://www.pngpix.com/wp-content/uploads/2016/03/Fox-PNG-image.png'
+		};
+	console.log('req.body: ' + req.body);
+	//console.log('req: ' + req);
+	/*mongo.connect(url, function(err, db) {
+		if (err) {
+			throw err;
+		} else {
+			console.log('Connection success');
+		}
+		db.collection('DividedWords').insertOne(word, function(err, result) {
+			if (err) {
+				throw err;
+			} else {
+				console.log('Success! Result: ' + result);
+				res.send(result.ops[0]);
+			}
+		});
+		db.close();
+		
+	});*/
+});
+router.get('/update-word', function(req, res) {
+	//Метод изменения слова
+	//Параметры изменения:
+	var id = '5a6469fe74bfd619049b7513'; //id записи которую надо менять
+	var word = {wholeWord : 'корова1'};
+	//var word = {'wholeWord' : 'корова', 'dividedWord' : 'ко-ро-ва', 'img' : 'https://kartinki.detki.today/wp-content/uploads/2017/07/chernaya-korova.png'}
+	mongo.connect(url, function(err, db) {
+		if (err) {
+			throw err;
+		} else {
+			console.log('Connection success');
+		}
+		db.collection('DividedWords').updateOne({_id : ObjectId(id)}, {$set: word}, function(err, result) {
+			if (err) {
+				throw err;
+			} else {
+				console.log('Success! Result: ' + result);
+				//res.send(result);
+			}
+		});
+		db.close();
+		
+	});
+});
+router.get('/delete-words', function(req, res) {
+	//Метод удаления слова
+	//Параметры удаления:
+	var ids = [ObjectId('5a6469fc74bfd619049b7512')]; //id записей которые надо удалить
+		mongo.connect(url, function(err, db) {
+		if (err) {
+			throw err;
+		} else {
+			console.log('Connection success');
+		}
+		db.collection('DividedWords').deleteMany({_id : {$in: ids}}, function(err, result) {
+			if (err) {
+				throw err;
+			} else {
+				console.log('Success! Result: ' + result);
+				//res.send(result);
+			}
+		});
+		db.close();
+		
+	});
+});
+
+module.exports = router;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#getAllWords">getAllWords</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Feb 11 2018 16:15:06 GMT+0400 (Арабское время (зима))
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
